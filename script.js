@@ -1,4 +1,4 @@
-// Dados dos serviços baseados na primeira imagem
+// Dados dos serviços baseados na imagem da ENGEMAP
 const servicesData = [
     {
         id: 1,
@@ -62,7 +62,7 @@ const servicesData = [
         unit: "Km",
         unitValue: 2200.75,
         quantity: 0,
-        selected: true
+        selected: false
     },
     {
         id: 9,
@@ -111,6 +111,134 @@ const servicesData = [
         unitValue: 4500.00,
         quantity: 0,
         selected: false
+    },
+    {
+        id: 15,
+        name: "Levantamento aerofotogramétrico classe I A",
+        unit: "Ha",
+        unitValue: 2800.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 16,
+        name: "Levantamento aerofotogramétrico classe II A",
+        unit: "Ha",
+        unitValue: 2200.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 17,
+        name: "Levantamento aerofotogramétrico classe III A",
+        unit: "Ha",
+        unitValue: 1800.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 18,
+        name: "Levantamento aerofotogramétrico classe IV A",
+        unit: "Ha",
+        unitValue: 1500.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 19,
+        name: "Levantamento aerofotogramétrico classe V A",
+        unit: "Ha",
+        unitValue: 1200.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 20,
+        name: "Levantamento aerofotogramétrico classe VI A",
+        unit: "Ha",
+        unitValue: 1000.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 21,
+        name: "Levantamento aerofotogramétrico classe VII A",
+        unit: "Ha",
+        unitValue: 800.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 22,
+        name: "Levantamento aerofotogramétrico classe VIII A",
+        unit: "Ha",
+        unitValue: 600.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 23,
+        name: "Levantamento aerofotogramétrico classe IX A",
+        unit: "Ha",
+        unitValue: 400.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 24,
+        name: "Levantamento aerofotogramétrico classe X A",
+        unit: "Ha",
+        unitValue: 200.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 25,
+        name: "Levantamento aerofotogramétrico classe XI A",
+        unit: "Ha",
+        unitValue: 100.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 26,
+        name: "Levantamento aerofotogramétrico classe XII A",
+        unit: "Ha",
+        unitValue: 50.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 27,
+        name: "Levantamento aerofotogramétrico classe XIII A",
+        unit: "Ha",
+        unitValue: 25.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 28,
+        name: "Levantamento aerofotogramétrico classe XIV A",
+        unit: "Ha",
+        unitValue: 10.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 29,
+        name: "Levantamento aerofotogramétrico classe XV A",
+        unit: "Ha",
+        unitValue: 5.00,
+        quantity: 0,
+        selected: false
+    },
+    {
+        id: 30,
+        name: "Levantamento aerofotogramétrico classe XVI A",
+        unit: "Ha",
+        unitValue: 2.50,
+        quantity: 0,
+        selected: false
     }
 ];
 
@@ -149,6 +277,12 @@ function createServiceRow(service) {
         formatCurrency(service.unitValue * service.quantity) : 
         'Informe uma quantidade';
 
+    // Só mostra o checkbox se a quantidade for maior que 0
+    const checkIcon = service.quantity > 0 ? 
+        `<span class="check-icon ${service.selected ? 'checked' : ''}" 
+               data-service-id="${service.id}">✓</span>` : 
+        '';
+
     row.innerHTML = `
         <td>${service.id}</td>
         <td>${service.name}</td>
@@ -164,8 +298,7 @@ function createServiceRow(service) {
         </td>
         <td class="total-value ${service.quantity === 0 ? 'zero' : ''}">${totalValue}</td>
         <td class="action-icons">
-            <span class="check-icon ${service.selected ? 'checked' : ''}" 
-                  data-service-id="${service.id}">✓</span>
+            ${checkIcon}
         </td>
     `;
 
@@ -183,11 +316,11 @@ function setupEventListeners() {
         }
     });
 
-    // Event listeners para ícones de seleção
+    // Event listeners para ícones de seleção (agora automático baseado na quantidade)
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('check-icon')) {
-            const serviceId = parseInt(e.target.dataset.serviceId);
-            toggleServiceSelection(serviceId);
+            // O checkbox agora é apenas visual, a seleção é automática baseada na quantidade
+            // Não precisa fazer nada aqui, pois a seleção é controlada pelo input de quantidade
         }
     });
 
@@ -222,39 +355,32 @@ function updateServiceQuantity(serviceId, quantity) {
         const row = document.querySelector(`tr:has(input[data-service-id="${serviceId}"])`);
         if (row) {
             const totalCell = row.querySelector('.total-value');
+            const actionCell = row.querySelector('.action-icons');
+            
             const totalValue = quantity > 0 ? 
                 formatCurrency(service.unitValue * quantity) : 
                 'Informe uma quantidade';
             
             totalCell.textContent = totalValue;
             totalCell.className = `total-value ${quantity === 0 ? 'zero' : ''}`;
+            
+            // Se quantidade > 0, mostrar checkbox e marcar automaticamente
+            if (quantity > 0) {
+                service.selected = true;
+                row.classList.add('selected');
+                actionCell.innerHTML = `<span class="check-icon checked" data-service-id="${serviceId}">✓</span>`;
+            } else {
+                service.selected = false;
+                row.classList.remove('selected');
+                actionCell.innerHTML = '';
+            }
         }
         
         updateTotalValue();
     }
 }
 
-function toggleServiceSelection(serviceId) {
-    const service = servicesData.find(s => s.id === serviceId);
-    if (service) {
-        service.selected = !service.selected;
-        
-        // Atualizar visual da linha
-        const row = document.querySelector(`tr:has(input[data-service-id="${serviceId}"])`);
-        const checkIcon = document.querySelector(`.check-icon[data-service-id="${serviceId}"]`);
-        
-        if (service.selected) {
-            row.classList.add('selected');
-            checkIcon.classList.add('checked');
-        } else {
-            row.classList.remove('selected');
-            checkIcon.classList.remove('checked');
-        }
-        
-        updateSelectedServices();
-        updateTotalValue();
-    }
-}
+// Função removida - a seleção agora é automática baseada na quantidade
 
 function updateSelectedServices() {
     selectedServices = servicesData.filter(service => service.selected && service.quantity > 0);
@@ -341,6 +467,16 @@ function resetSystem() {
     
     renderServicesTable();
     updateTotalValue();
+    
+    // Limpar dados do cliente
+    document.getElementById('quotationNumber').value = 'ORC-2024-001';
+    document.getElementById('contactName').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('municipality').value = '';
+    document.getElementById('clientName').value = '';
+    document.getElementById('position').value = '';
+    document.getElementById('cellContact').value = '';
+    document.getElementById('address').value = '';
 }
 
 function generatePDF() {
@@ -355,64 +491,98 @@ function generatePDF() {
     generateBtn.innerHTML = '⏳ Gerando PDF...';
     generateBtn.disabled = true;
 
-    // Criar conteúdo do PDF
-    const pdfContent = createPDFContent();
+    // Obter dados do cliente
+    const clientData = getClientData();
     
     // Gerar PDF usando jsPDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    // Configurações do PDF
-    doc.setFontSize(16);
+    // Header da empresa
+    doc.setFontSize(20);
     doc.setFont(undefined, 'bold');
-    doc.text('SISTEMA DE CONTRATAÇÃO DE SERVIÇOS TOPOGRÁFICOS', 20, 30);
+    doc.setTextColor(0, 102, 204);
+    doc.text('ENGEMAP - ENGENHARIA E AEROLEVANTAMENTO Ltda', 20, 30);
     
     doc.setFontSize(12);
+    doc.setTextColor(255, 102, 0);
+    doc.text('Sistema Web de Orçamento - Saneamento', 20, 40);
+    
+    // Dados do cliente
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
     doc.setFont(undefined, 'normal');
-    doc.text('Data: ' + new Date().toLocaleDateString('pt-BR'), 20, 45);
-    doc.text('Valor Total: ' + formatCurrency(totalValue), 20, 55);
+    
+    let yPos = 60;
+    doc.text(`Número Orçamento: ${clientData.quotationNumber}`, 20, yPos);
+    doc.text(`Cliente: ${clientData.clientName}`, 120, yPos);
+    yPos += 10;
+    
+    doc.text(`Nome Contato: ${clientData.contactName}`, 20, yPos);
+    doc.text(`Cargo: ${clientData.position}`, 120, yPos);
+    yPos += 10;
+    
+    doc.text(`Email: ${clientData.email}`, 20, yPos);
+    doc.text(`Contato Cel: ${clientData.cellContact}`, 120, yPos);
+    yPos += 10;
+    
+    doc.text(`Município: ${clientData.municipality}`, 20, yPos);
+    doc.text(`Endereço: ${clientData.address}`, 120, yPos);
+    yPos += 20;
+    
+    // Título dos serviços
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(0, 102, 204);
+    doc.text('SERVIÇOS GERAIS DE SANEAMENTO', 20, yPos);
+    yPos += 15;
     
     // Tabela de serviços
-    let yPosition = 70;
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont(undefined, 'bold');
     
     // Cabeçalho da tabela
-    doc.text('Item', 20, yPosition);
-    doc.text('Serviço', 30, yPosition);
-    doc.text('Unidade', 120, yPosition);
-    doc.text('Valor Un.', 150, yPosition);
-    doc.text('Quantidade', 180, yPosition);
-    doc.text('Valor Total', 200, yPosition);
+    doc.text('ITEM', 20, yPos);
+    doc.text('SERVIÇO', 30, yPos);
+    doc.text('UNIDADE', 120, yPos);
+    doc.text('VALOR UN.', 150, yPos);
+    doc.text('QUANTIDADE', 180, yPos);
+    doc.text('VALOR TOTAL', 200, yPos);
     
-    yPosition += 10;
+    yPos += 8;
     doc.setFont(undefined, 'normal');
     
     selectedServices.forEach((service, index) => {
-        if (yPosition > 250) {
+        if (yPos > 250) {
             doc.addPage();
-            yPosition = 30;
+            yPos = 30;
         }
         
-        doc.text(service.id.toString(), 20, yPosition);
-        doc.text(service.name, 30, yPosition);
-        doc.text(service.unit, 120, yPosition);
-        doc.text(formatCurrency(service.unitValue), 150, yPosition);
-        doc.text(service.quantity.toString(), 180, yPosition);
-        doc.text(formatCurrency(service.unitValue * service.quantity), 200, yPosition);
+        doc.text(service.id.toString(), 20, yPos);
+        doc.text(service.name, 30, yPos);
+        doc.text(service.unit, 120, yPos);
+        doc.text(formatCurrency(service.unitValue), 150, yPos);
+        doc.text(service.quantity.toString(), 180, yPos);
+        doc.text(formatCurrency(service.unitValue * service.quantity), 200, yPos);
         
-        yPosition += 8;
+        yPos += 6;
     });
+    
+    // Valor total
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.text('VALOR TOTAL: ' + formatCurrency(totalValue), 20, yPos);
     
     // Adicionar especificação técnica
     doc.addPage();
-    yPosition = 30;
+    yPos = 30;
     
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text('ESPECIFICAÇÃO TÉCNICA - BASES CARTOGRÁFICAS', 20, yPosition);
+    doc.text('ESPECIFICAÇÃO TÉCNICA - BASES CARTOGRÁFICAS', 20, yPos);
     
-    yPosition += 20;
+    yPos += 20;
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     
@@ -449,27 +619,40 @@ O indicador "Expectativa de Anos de Estudo" sintetiza a frequência.
     
     const lines = specText.split('\n');
     lines.forEach(line => {
-        if (yPosition > 250) {
+        if (yPos > 250) {
             doc.addPage();
-            yPosition = 30;
+            yPos = 30;
         }
         
         if (line.trim()) {
-            doc.text(line, 20, yPosition);
-            yPosition += 6;
+            doc.text(line, 20, yPos);
+            yPos += 6;
         } else {
-            yPosition += 3;
+            yPos += 3;
         }
     });
     
     // Salvar PDF
-    doc.save('contratacao-servicos-topograficos.pdf');
+    doc.save('orcamento-engemap-saneamento.pdf');
     
     // Restaurar botão
     generateBtn.innerHTML = originalText;
     generateBtn.disabled = false;
     
     alert('PDF gerado com sucesso!');
+}
+
+function getClientData() {
+    return {
+        quotationNumber: document.getElementById('quotationNumber').value || 'N/A',
+        contactName: document.getElementById('contactName').value || 'N/A',
+        email: document.getElementById('email').value || 'N/A',
+        municipality: document.getElementById('municipality').value || 'N/A',
+        clientName: document.getElementById('clientName').value || 'N/A',
+        position: document.getElementById('position').value || 'N/A',
+        cellContact: document.getElementById('cellContact').value || 'N/A',
+        address: document.getElementById('address').value || 'N/A'
+    };
 }
 
 function createPDFContent() {
