@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Contratação de Serviços Topográficos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Serviços Gerais - Topografia e Cartografia</h1>
+            <p>Sistema de Contratação de Serviços Técnicos</p>
+        </header>
+
+        <div class="services-section">
+            <div class="services-header">
+                <h2>Serviços Gerais</h2>
+            </div>
+            
+            <div class="table-container">
+                <table id="servicesTable">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Serviço</th>
+                            <th>Unidade</th>
+                            <th>Valor Un.</th>
+                            <th>Quantidade</th>
+                            <th>Valor Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesTableBody">
+                        <!-- Os serviços serão inseridos via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total-section">
+                <div class="total-display">
+                    <h3>Valor Total dos Serviços: <span id="totalValue">R$ 0,00</span></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <button id="viewSpecBtn" class="btn btn-secondary" disabled>
+                📋 Ver Especificação Técnica
+            </button>
+            <button id="finalizeBtn" class="btn btn-primary" disabled>
+                ✅ Finalizar Contratação
+            </button>
+            <button id="generatePdfBtn" class="btn btn-success" disabled>
+                📄 Gerar PDF
+            </button>
+        </div>
+
+        <!-- Modal para Especificação Técnica -->
+        <div id="specModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Especificação Técnica - Bases Cartográficas</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="spec-content">
+                        <h3>Item 1.1 - Especificações técnicas bases cartográficas</h3>
+                        
+                        <p>As proporções de crianças e jovens frequentando ou tendo completado determinados ciclos indicam a situação educacional entre a população em idade escolar e contribuem para o IDHM Educação.</p>
+                        
+                        <h4>Proporções Educacionais (2010):</h4>
+                        <ul>
+                            <li>Proporção de crianças de 5 a 6 anos na escola: <strong>96,31%</strong></li>
+                            <li>Proporção de crianças de 11 a 13 anos frequentando os anos finais do ensino fundamental: <strong>95,17%</strong></li>
+                            <li>Proporção de jovens de 15 a 17 anos com ensino fundamental completo: <strong>67,43%</strong></li>
+                            <li>Proporção de jovens de 18 a 20 anos com ensino médio completo: <strong>56,13%</strong></li>
+                        </ul>
+                        
+                        <h4>Evolução Temporal (1991-2010):</h4>
+                        <p>Essas proporções aumentaram significativamente entre 1991 e 2010:</p>
+                        <ul>
+                            <li>Primeira proporção (5-6 anos): aumento de <strong>48,99 pontos percentuais</strong></li>
+                            <li>Segunda proporção (11-13 anos): aumento de <strong>64,61 pontos percentuais</strong></li>
+                            <li>Terceira proporção (15-17 anos): aumento de <strong>53,96 pontos percentuais</strong></li>
+                            <li>Quarta proporção (18-20 anos): aumento de <strong>56,13 pontos percentuais</strong></li>
+                        </ul>
+                        
+                        <h4>Distorção Idade-Série no Ensino Básico:</h4>
+                        <p>Em 2010, <strong>89,47%</strong> da população de 6 a 17 anos do município estava matriculada no ensino básico regular com até dois anos de distorção idade-série.</p>
+                        <ul>
+                            <li>2000: <strong>74,47%</strong></li>
+                            <li>1991: <strong>62,86%</strong></li>
+                        </ul>
+                        
+                        <h4>Matrícula no Ensino Superior:</h4>
+                        <p>Em 2010, <strong>11,36%</strong> dos jovens de 18 a 24 anos cursavam o ensino superior.</p>
+                        <ul>
+                            <li>2000: <strong>2,42%</strong></li>
+                            <li>1991: <strong>2,41%</strong></li>
+                        </ul>
+                        
+                        <p><em>O indicador "Expectativa de Anos de Estudo" sintetiza a frequência.</em></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeSpecModal" class="btn btn-secondary">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Confirmar Contratação</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Deseja finalizar a contratação dos serviços selecionados?</p>
+                    <div class="selected-services" id="selectedServicesList">
+                        <!-- Lista de serviços selecionados será inserida aqui -->
+                    </div>
+                    <div class="final-total">
+                        <strong>Valor Total: <span id="finalTotalValue">R$ 0,00</span></strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelConfirm" class="btn btn-secondary">Cancelar</button>
+                    <button id="confirmContract" class="btn btn-primary">Confirmar Contratação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
